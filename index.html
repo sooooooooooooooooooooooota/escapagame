@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>シンプル脱出ゲーム</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game">
+    <div class="header">
+      <span>Room Escape #01</span>
+      <span style="float: right;" class="badge">
+        <span class="badge-dot"></span> HTML / JS
+      </span>
+    </div>
+
+    <div class="room">
+      <div class="door" id="door" title="ドア"></div>
+
+      <div class="desk" id="desk" title="机">
+        <div class="desk-top"></div>
+        <div class="desk-leg left"></div>
+        <div class="desk-leg right"></div>
+      </div>
+
+      <div class="box" id="box" title="怪しい箱">BOX</div>
+
+      <div class="poster" id="poster" title="ポスター">
+        「机の上の<br />箱が怪しい…」
+      </div>
+    </div>
+
+    <div class="ui">
+      <div>
+        <div class="log">
+          <div class="log-main" id="log-main">
+            ここは見知らぬ部屋だ。ドアは固く閉ざされている。
+          </div>
+          <div class="log-sub" id="log-sub">
+            気になる場所をクリックして調べてみよう。
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btn-reset">最初からやり直す</button>
+        </div>
+      </div>
+
+      <div class="inventory">
+        <div class="inventory-title">INVENTORY</div>
+        <div class="inventory-items" id="inventory"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Box クリック時の画像モーダル -->
+  <div class="modal hidden" id="image-modal">
+    <div class="modal-backdrop" data-modal-close="image-modal"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>謎のメモ</span>
+        <button class="modal-close" data-modal-close="image-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <!-- 好きな画像名に変えて OK -->
+        <img
+          src="puzzle.png"
+          alt="謎の画像"
+          class="modal-image"
+        />
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ドアクリック時の答え入力モーダル -->
+  <div class="modal hidden" id="answer-modal">
+    <div class="modal-backdrop" data-modal-close="answer-modal"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>答えを入力</span>
+        <button class="modal-close" data-modal-close="answer-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-text">
+          箱の画像から導かれる答えを入力してください。
+        </p>
+        <input
+          type="text"
+          id="answer-input"
+          class="modal-input"
+          placeholder="答えを入力..."
+        />
+        <div class="modal-actions">
+          <button id="btn-answer-cancel" class="secondary">キャンセル</button>
+          <button id="btn-answer-ok">決定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
+
