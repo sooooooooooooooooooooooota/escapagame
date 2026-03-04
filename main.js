@@ -7,7 +7,7 @@ const inventory = document.getElementById("inventory");
 const CORRECT_ANSWER = "ミラー";
 
 // ダイヤルで選べる文字（正解に使う文字 + 残り6つは適当）
-const DIAL_CHARS = ["ミ", "ラ", "ー", "カ", "ギ", "ド", "ア", "ハ", "コ"];
+const DIAL_CHARS = ["カ", "ラ", "ア", "ミ", "ギ", "ド", "ー", "ハ", "コ"];
 
 const DIAL_LENGTH = 3;
 let dialIndices = Array.from({ length: DIAL_LENGTH }, () => 0);
@@ -15,6 +15,9 @@ let dialIndices = Array.from({ length: DIAL_LENGTH }, () => 0);
 const state = {
   escaped: false,
   stage: 1,
+  hasKey: false,
+  keyTakenOnce: false,
+  boxOpened: false,
 };
 
 function setLog(main, sub) {
@@ -24,10 +27,18 @@ function setLog(main, sub) {
 
 function renderInventory() {
   inventory.innerHTML = "";
-  const span = document.createElement("span");
-  span.style.color = "#777";
-  span.textContent = "手がかりは頭の中にある。";
-  inventory.appendChild(span);
+  if (state.hasKey) {
+    const img = document.createElement("img");
+    img.src = "key.png";
+    img.alt = "鍵";
+    img.className = "inventory-key";
+    inventory.appendChild(img);
+  } else {
+    const span = document.createElement("span");
+    span.style.color = "#777";
+    span.textContent = "何も持っていない。";
+    inventory.appendChild(span);
+  }
 }
 
 function showModal(id) {
@@ -71,9 +82,39 @@ function rotateDial(index, delta) {
   renderDials();
 }
 
+function updateRoomObjects() {
+  const box = document.getElementById("box");
+  const paper = document.getElementById("paper");
+  if (!box || !paper) return;
+
+  const boxImg = box.querySelector("img");
+  if (boxImg) {
+    if (state.stage === 2 && state.boxOpened) {
+      boxImg.src = "paper.png";
+      boxImg.alt = "紙";
+      box.title = "紙";
+    } else {
+      boxImg.src = "takarabako.png";
+      boxImg.alt = "宝箱";
+      box.title = "宝箱";
+    }
+  }
+
+  if (state.stage === 1) {
+    paper.style.display = "flex";
+    box.style.display = "none";
+  } else {
+    paper.style.display = "none";
+    box.style.display = "flex";
+  }
+}
+
 function resetGame() {
   state.escaped = false;
   state.stage = 1;
+  state.hasKey = false;
+  state.keyTakenOnce = false;
+  state.boxOpened = false;
   setLog(
     "ここは見知らぬ部屋だ。ドアは固く閉ざされている。",
     "気になる場所をクリックして調べてみよう。"
@@ -84,19 +125,26 @@ function resetGame() {
   hideModal("image-modal");
   hideModal("answer-modal");
   hideModal("clear-modal");
+  hideModal("key-modal");
   resetDials();
+  updateRoomObjects();
 }
 
 function goToNextStage() {
   hideModal("clear-modal");
   state.escaped = false;
   state.stage = 2;
+  state.hasKey = false;
+  state.keyTakenOnce = false;
+  state.boxOpened = false;
   const title = document.getElementById("room-title");
   if (title) title.textContent = "Room Escape #02";
   setLog(
     "別の部屋にたどり着いた。",
     "ステージ2の謎はこれから作り込んでいこう。"
   );
+  renderInventory();
+  updateRoomObjects();
 }
 
 // ドア：答え入力モーダルを開く
@@ -132,12 +180,29 @@ document.getElementById("desk").addEventListener("click", () => {
   }
 
   setLog(
-    "古びた机だ。上に小さな箱が置かれている。",
-    "箱をクリックすると何かが見えるかもしれない。"
+    "古びた机だ。上に一枚の紙が置かれている。",
+    "紙をタップして内容を確認してみよう。"
   );
 });
 
-// Box：画像モーダルを開く
+// 紙：ステージ1の手がかり
+document.getElementById("paper").addEventListener("click", () => {
+  if (state.escaped) {
+    setLog(
+      "もう紙の内容は頭に入っている。",
+      "次の謎に進んでも良さそうだ。"
+    );
+    return;
+  }
+
+  showModal("image-modal");
+  setLog(
+    "紙には何かのヒントが書かれている。",
+    "じっくり眺めて、答えを導き出そう。"
+  );
+});
+
+// Box：ステージ2で中から紙が出てくる
 document.getElementById("box").addEventListener("click", () => {
   if (state.escaped) {
     setLog(
@@ -147,14 +212,41 @@ document.getElementById("box").addEventListener("click", () => {
     return;
   }
 
+  if (state.stage === 1) {
+    setLog(
+      "今はこの箱には用がなさそうだ。",
+      "まずは机の上の紙を確認してみよう。"
+    );
+    return;
+  }
+
+  if (!state.hasKey) {
+    setLog(
+      "頑丈な箱だ。小さな鍵穴が見える。",
+      "どこかに合う鍵が隠れていそうだ。"
+    );
+    return;
+  }
+
   showModal("image-modal");
-  setLog(
-    "箱の中には一枚の画像が入っていた。",
-    "じっくり眺めて、答えを導き出そう。"
-  );
+  if (!state.boxOpened) {
+    state.boxOpened = true;
+    state.hasKey = false;
+    renderInventory();
+    updateRoomObjects();
+    setLog(
+      "箱の中から一枚の紙が出てきた。",
+      "紙の内容をよく読んでみよう。"
+    );
+  } else {
+    setLog(
+      "箱の中には先ほどの紙が入っている。",
+      "気になるところがあれば、もう一度よく見直そう。"
+    );
+  }
 });
 
-// ポスター：追加ヒント
+// ポスター：ステージ1はヒント、ステージ2では鍵を入手
 document.getElementById("poster").addEventListener("click", () => {
   if (state.escaped) {
     setLog(
@@ -164,10 +256,37 @@ document.getElementById("poster").addEventListener("click", () => {
     return;
   }
 
-  setLog(
-    "ポスターには『箱の中身をよく見ろ』と書かれている。",
-    "画像の中に数字や形のヒントが隠れているのかもしれない。"
-  );
+  if (state.stage === 1) {
+    setLog(
+      "ポスターには『机の上の紙を読め』と書かれている。",
+      "紙をタップして内容を確認してみよう。"
+    );
+    return;
+  }
+
+  if (state.keyTakenOnce) {
+    setLog(
+      "ポスターの裏はもう調べ尽くした。",
+      "鍵はもう手に入らないようだ。"
+    );
+    return;
+  }
+
+  if (!state.hasKey) {
+    state.hasKey = true;
+    state.keyTakenOnce = true;
+    renderInventory();
+    showModal("key-modal");
+    setLog(
+      "ポスターの裏から小さな鍵を見つけた。",
+      "この鍵なら机の上の箱を開けられるかもしれない。"
+    );
+  } else {
+    setLog(
+      "ポスターの裏はもう調べた。",
+      "鍵はしっかりポケット（インベントリ）に入っている。"
+    );
+  }
 });
 
 // モーダルの×ボタン & 背景クリックで閉じる

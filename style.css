@@ -132,6 +132,37 @@ body {
   transform: translateY(-2px);
 }
 
+/* 机の上の紙（ステージ1） */
+.paper {
+  position: absolute;
+  left: 146px;
+  bottom: 118px;
+  width: 72px;
+  height: 72px;
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.paper-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
+.paper:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+}
+
 /* 壁のポスター（ヒント用） */
 .poster {
   position: absolute;
@@ -207,6 +238,13 @@ body {
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.inventory-key {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
 }
 
 .item {
@@ -490,8 +528,9 @@ button:active {
 
   .ui {
     grid-template-columns: 1fr;
-    height: 45vh;
+    height: auto;
     box-sizing: border-box;
+    row-gap: 8px;
   }
 }
 

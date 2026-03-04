@@ -24,6 +24,10 @@
         <div class="desk-leg right"></div>
       </div>
 
+      <button class="paper" id="paper" type="button" title="紙">
+        <img src="paper.png" alt="紙" class="paper-image" />
+      </button>
+
       <button class="box" id="box" type="button" title="宝箱">
         <img src="takarabako.png" alt="宝箱" class="box-image" />
       </button>
@@ -60,14 +64,31 @@
     <div class="modal-backdrop" data-modal-close="image-modal"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <span>謎のメモ</span>
+        <span>紙のメモ</span>
         <button class="modal-close" data-modal-close="image-modal">×</button>
       </div>
       <div class="modal-body">
-        <!-- 好きな画像名に変えて OK -->
         <img
           src="puzzle.png"
-          alt="謎の画像"
+          alt="紙のメモ"
+          class="modal-image"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- 鍵を入手したときの画像モーダル -->
+  <div class="modal hidden" id="key-modal">
+    <div class="modal-backdrop" data-modal-close="key-modal"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>鍵を手に入れた</span>
+        <button class="modal-close" data-modal-close="key-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <img
+          src="key.png"
+          alt="鍵"
           class="modal-image"
         />
       </div>
