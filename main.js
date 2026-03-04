@@ -3,7 +3,14 @@ const logSub = document.getElementById("log-sub");
 const inventory = document.getElementById("inventory");
 
 // 正解の答え（必要に応じて変更）
+// ダイヤルは 3 文字想定（例: "ミラー"）
 const CORRECT_ANSWER = "ミラー";
+
+// ダイヤルで選べる文字（正解に使う文字 + 残り6つは適当）
+const DIAL_CHARS = ["ミ", "ラ", "ー", "カ", "ギ", "ド", "ア", "ハ", "コ"];
+
+const DIAL_LENGTH = 3;
+let dialIndices = Array.from({ length: DIAL_LENGTH }, () => 0);
 
 const state = {
   escaped: false,
@@ -37,6 +44,33 @@ function hideModal(id) {
   }
 }
 
+function getDialAnswer() {
+  return dialIndices.map((idx) => DIAL_CHARS[idx] ?? "?").join("");
+}
+
+function renderDials() {
+  for (let i = 0; i < DIAL_LENGTH; i++) {
+    const el = document.getElementById(`dial-value-${i}`);
+    if (el) el.textContent = DIAL_CHARS[dialIndices[i]] ?? "?";
+  }
+  const preview = document.getElementById("dial-preview-text");
+  if (preview) preview.textContent = getDialAnswer();
+}
+
+function resetDials() {
+  dialIndices = Array.from({ length: DIAL_LENGTH }, () => 0);
+  renderDials();
+}
+
+function rotateDial(index, delta) {
+  const len = DIAL_CHARS.length;
+  if (len <= 0) return;
+  const current = dialIndices[index] ?? 0;
+  const next = (current + delta + len) % len;
+  dialIndices[index] = next;
+  renderDials();
+}
+
 function resetGame() {
   state.escaped = false;
   state.stage = 1;
@@ -50,8 +84,7 @@ function resetGame() {
   hideModal("image-modal");
   hideModal("answer-modal");
   hideModal("clear-modal");
-  const input = document.getElementById("answer-input");
-  if (input) input.value = "";
+  resetDials();
 }
 
 function goToNextStage() {
@@ -84,12 +117,8 @@ document.getElementById("door").addEventListener("click", () => {
     return;
   }
 
-  const input = document.getElementById("answer-input");
-  if (input) input.value = "";
+  resetDials();
   showModal("answer-modal");
-  setTimeout(() => {
-    input && input.focus();
-  }, 10);
 });
 
 // 机：ヒント文
@@ -162,16 +191,7 @@ document.getElementById("btn-answer-cancel").addEventListener("click", () => {
 
 // 答え入力モーダル：決定
 document.getElementById("btn-answer-ok").addEventListener("click", () => {
-  const input = document.getElementById("answer-input");
-  const value = input ? input.value.trim() : "";
-
-  if (!value) {
-    setLog(
-      "何も入力されていない。",
-      "画像を見て、何かしらの答えを考えてみよう。"
-    );
-    return;
-  }
+  const value = getDialAnswer();
 
   if (value === CORRECT_ANSWER) {
     state.escaped = true;
@@ -189,12 +209,15 @@ document.getElementById("btn-answer-ok").addEventListener("click", () => {
   }
 });
 
-// Enter キーで答え送信
-document.getElementById("answer-input").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    document.getElementById("btn-answer-ok").click();
-  }
+// ダイヤル操作
+document.querySelectorAll("[data-dial-index][data-dial-delta]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const index = Number(btn.getAttribute("data-dial-index"));
+    const delta = Number(btn.getAttribute("data-dial-delta"));
+    if (Number.isFinite(index) && Number.isFinite(delta)) {
+      rotateDial(index, delta);
+    }
+  });
 });
 
 // リセットボタン

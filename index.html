@@ -24,7 +24,9 @@
         <div class="desk-leg right"></div>
       </div>
 
-      <div class="box" id="box" title="怪しい箱">BOX</div>
+      <button class="box" id="box" type="button" title="宝箱">
+        <img src="takarabako.png" alt="宝箱" class="box-image" />
+      </button>
 
       <div class="poster" id="poster" title="ポスター">
         「机の上の<br />箱が怪しい…」
@@ -68,7 +70,6 @@
           alt="謎の画像"
           class="modal-image"
         />
-        </p>
       </div>
     </div>
   </div>
@@ -85,12 +86,26 @@
         <p class="modal-text">
           箱の画像から導かれる答えを入力してください。
         </p>
-        <input
-          type="text"
-          id="answer-input"
-          class="modal-input"
-          placeholder="答えを入力..."
-        />
+        <div class="dial-row" id="dial-row" aria-label="答えのダイヤル">
+          <div class="dial">
+            <button type="button" class="dial-btn" data-dial-index="0" data-dial-delta="-1">▲</button>
+            <div class="dial-value" id="dial-value-0">?</div>
+            <button type="button" class="dial-btn" data-dial-index="0" data-dial-delta="1">▼</button>
+          </div>
+          <div class="dial">
+            <button type="button" class="dial-btn" data-dial-index="1" data-dial-delta="-1">▲</button>
+            <div class="dial-value" id="dial-value-1">?</div>
+            <button type="button" class="dial-btn" data-dial-index="1" data-dial-delta="1">▼</button>
+          </div>
+          <div class="dial">
+            <button type="button" class="dial-btn" data-dial-index="2" data-dial-delta="-1">▲</button>
+            <div class="dial-value" id="dial-value-2">?</div>
+            <button type="button" class="dial-btn" data-dial-index="2" data-dial-delta="1">▼</button>
+          </div>
+        </div>
+        <div class="dial-preview">
+          選択中: <span id="dial-preview-text">???</span>
+        </div>
         <div class="modal-actions">
           <button id="btn-answer-cancel" class="secondary">キャンセル</button>
           <button id="btn-answer-ok">決定</button>
