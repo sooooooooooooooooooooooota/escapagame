@@ -2,13 +2,14 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>シンプル脱出ゲーム</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="game">
     <div class="header">
-      <span>Room Escape #01</span>
+      <span id="room-title">Room Escape #01</span>
       <span style="float: right;" class="badge">
         <span class="badge-dot"></span> HTML / JS
       </span>
@@ -93,6 +94,26 @@
         <div class="modal-actions">
           <button id="btn-answer-cancel" class="secondary">キャンセル</button>
           <button id="btn-answer-ok">決定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- クリア時のモーダル -->
+  <div class="modal hidden" id="clear-modal">
+    <div class="modal-backdrop" data-modal-close="clear-modal"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <span>Stage 1 Clear</span>
+        <button class="modal-close" data-modal-close="clear-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-text">
+          正しい答えを入力し、ドアの鍵が外れた！<br />
+          次のステージへ進みますか？
+        </p>
+        <div class="modal-actions">
+          <button id="btn-next-stage">次のステージへ</button>
         </div>
       </div>
     </div>

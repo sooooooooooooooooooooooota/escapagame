@@ -2,11 +2,12 @@ const logMain = document.getElementById("log-main");
 const logSub = document.getElementById("log-sub");
 const inventory = document.getElementById("inventory");
 
-// 答え（好きな文字列にしてOK）
+// 正解の答え（必要に応じて変更）
 const CORRECT_ANSWER = "ミラー";
 
 const state = {
   escaped: false,
+  stage: 1,
 };
 
 function setLog(main, sub) {
@@ -38,15 +39,31 @@ function hideModal(id) {
 
 function resetGame() {
   state.escaped = false;
+  state.stage = 1;
   setLog(
     "ここは見知らぬ部屋だ。ドアは固く閉ざされている。",
     "気になる場所をクリックして調べてみよう。"
   );
   renderInventory();
+  const title = document.getElementById("room-title");
+  if (title) title.textContent = "Room Escape #01";
   hideModal("image-modal");
   hideModal("answer-modal");
+  hideModal("clear-modal");
   const input = document.getElementById("answer-input");
   if (input) input.value = "";
+}
+
+function goToNextStage() {
+  hideModal("clear-modal");
+  state.escaped = false;
+  state.stage = 2;
+  const title = document.getElementById("room-title");
+  if (title) title.textContent = "Room Escape #02";
+  setLog(
+    "別の部屋にたどり着いた。",
+    "ステージ2の謎はこれから作り込んでいこう。"
+  );
 }
 
 // ドア：答え入力モーダルを開く
@@ -55,6 +72,14 @@ document.getElementById("door").addEventListener("click", () => {
     setLog(
       "もうこの部屋からは脱出している。",
       "別の謎に挑戦したくなってきた。"
+    );
+    return;
+  }
+
+  if (state.stage === 2) {
+    setLog(
+      "この部屋の仕掛けはまだ準備中だ。",
+      "ステージ2の内容をこれから実装しよう。"
     );
     return;
   }
@@ -153,8 +178,9 @@ document.getElementById("btn-answer-ok").addEventListener("click", () => {
     hideModal("answer-modal");
     setLog(
       "カチリ、と小さな音がしてドアの鍵が外れた。",
-      "正しい答えだったようだ……脱出成功！"
+      "正しい答えだったようだ。"
     );
+    showModal("clear-modal");
   } else {
     setLog(
       "ドアはびくともしない。",
@@ -174,6 +200,11 @@ document.getElementById("answer-input").addEventListener("keydown", (e) => {
 // リセットボタン
 document.getElementById("btn-reset").addEventListener("click", () => {
   resetGame();
+});
+
+// クリアモーダル：次のステージへ
+document.getElementById("btn-next-stage").addEventListener("click", () => {
+  goToNextStage();
 });
 
 // 初期表示
